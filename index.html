@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프로젝트 인수인계서</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: #e2e5ea;
+    --border-strong: #c8cdd6;
+    --text: #111318;
+    --text-secondary: #5a6070;
+    --text-muted: #9099a8;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --rust: #dc4a1a;
+    --rust-light: #fff3ef;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --red: #dc2626;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* ── 헤더 ── */
+  .doc-header {
+    background: var(--text);
+    color: #fff;
+    padding: 44px 60px 36px;
+  }
+  .header-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 14px;
+  }
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .header-subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 36px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 3px; }
+  .meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .meta-value input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    width: 180px;
+    outline: none;
+    padding-bottom: 3px;
+    transition: border-color 0.15s;
+  }
+  .meta-value input:focus { border-bottom-color: rgba(255,255,255,0.6); }
+
+  /* ── 진행 단계 바 ── */
+  .progress-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    gap: 0;
+  }
+  .stage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px 14px 0;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .stage:not(:last-child)::after {
+    content: '/';
+    color: var(--border-strong);
+    margin-right: 0;
+    font-size: 11px;
+    font-weight: 300;
+  }
+  .stage-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    flex-shrink: 0;
+  }
+  .stage.done .stage-dot { background: var(--accent); }
+  .stage.current .stage-dot { background: var(--rust); box-shadow: 0 0 0 3px rgba(220,74,26,0.15); }
+  .stage-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .stage.done .stage-name { color: var(--accent); }
+  .stage.current .stage-name { color: var(--rust); font-weight: 500; }
+
+  /* ── 레이아웃 ── */
+  .doc-body {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: calc(100vh - 180px);
+  }
+
+  /* ── 사이드바 ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 24px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 24px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    transition: all 0.12s;
+    border-left: 2px solid transparent;
+  }
+  .toc-item:hover { color: var(--text); background: var(--bg); }
+  .toc-item.active { color: var(--accent); font-weight: 600; border-left-color: var(--accent); background: var(--accent-light); }
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--border-strong);
+    min-width: 16px;
+  }
+  .toc-item.active .toc-num { color: var(--accent); }
+
+  /* ── 콘텐츠 ── */
+  .content { padding: 48px 56px; max-width: 860px; }
+
+  /* ── 섹션 ── */
+  .section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    min-width: 24px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .section-badge {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── 필드 ── */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .field-grid.full { grid-template-columns: 1fr; }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .field input, .field textarea, .field select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.12s;
+    resize: vertical;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { min-height: 80px; }
+
+  /* ── 마일스톤 ── */
+  .milestone-list { display: flex; flex-direction: column; }
+  .milestone-item {
+    display: grid;
+    grid-template-columns: 110px 16px 1fr auto;
+    gap: 0 14px;
+    align-items: start;
+    position: relative;
+  }
+  .milestone-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    padding-top: 14px;
+    text-align: right;
+  }
+  .ms-date-input {
+    border: none;
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 100px;
+    outline: none;
+    text-align: right;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.12s;
+  }
+  .ms-date-input:focus { border-bottom-color: var(--accent); color: var(--text); }
+  .milestone-track { display: flex; flex-direction: column; align-items: center; }
+  .milestone-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--border-strong);
+    margin-top: 15px;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .milestone-dot.done { background: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .milestone-dot.current { background: var(--rust); box-shadow: 0 0 0 3px rgba(220,74,26,0.15), 0 0 0 1px var(--rust); }
+  .milestone-line { width: 1px; background: var(--border); flex: 1; min-height: 28px; }
+  .milestone-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 8px 0;
+  }
+  .milestone-content input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 3px;
+  }
+  .milestone-content textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 11px;
+    color: var(--text-secondary);
+    outline: none;
+    resize: none;
+    line-height: 1.6;
+    min-height: 28px;
+  }
+  .milestone-status-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .ms-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-weight: 500;
+  }
+  .ms-btn:hover { border-color: var(--border-strong); color: var(--text-secondary); }
+  .ms-btn.active-done    { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .ms-btn.active-current { background: var(--rust-light); border-color: var(--rust); color: var(--rust); }
+  .ms-btn.active-pending { background: var(--surface2); border-color: var(--border-strong); color: var(--text-secondary); }
+
+  /* ── 삭제 버튼 (공통) ── */
+  .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border-strong);
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 3px;
+    transition: all 0.12s;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 12px;
+  }
+  .btn-delete:hover { color: var(--red); background: #fff0f0; }
+
+  /* ── 파일 목록 ── */
+  .file-list { display: flex; flex-direction: column; gap: 6px; }
+  .file-item {
+    display: grid;
+    grid-template-columns: 40px 1fr 200px 28px;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .file-icon {
+    width: 36px; height: 36px;
+    background: var(--surface2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .file-icon.hwp { background: #f0f7ff; color: #1e6fcc; border-color: rgba(30,111,204,0.2); }
+  .file-type-select {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    text-align-last: center;
+    outline: none;
+    cursor: pointer;
+    padding: 0 2px;
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+  }
+  .file-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+  .file-note { font-size: 13px; color: var(--text-muted); }
+  .file-path {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid var(--border);
+  }
+  /* 파일 항목 내 input도 동일 크기 */
+  .file-item input[type=text] {
+    font-size: 13px;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    display: block;
+  }
+  .file-item input[type=text].file-note-input {
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .file-item input[type=text].file-path-input {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border) !important;
+    width: 180px;
+  }
+
+  /* ── 관계자 테이블 ── */
+  .contact-table { width: 100%; border-collapse: collapse; }
+  .contact-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-strong);
+    background: var(--surface2);
+    font-weight: 500;
+  }
+  .contact-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .contact-table tr:hover td { background: var(--bg); }
+  .contact-table td input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+  }
+  .contact-table .del-cell { width: 32px; text-align: center; }
+  .role-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    border: 1px solid var(--border);
+  }
+  .role-tag.client { background: var(--rust-light); color: var(--rust); border-color: rgba(220,74,26,0.2); }
+  .role-tag.auth { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
+
+  /* ── 구분 드롭다운 ── */
+  .role-select {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-secondary);
+    outline: none;
+    cursor: pointer;
+    width: 90px;
+    transition: all 0.12s;
+  }
+  .role-select:focus { border-color: var(--accent); }
+  .role-select[data-type="발주처"]     { background: var(--rust-light);   color: var(--rust);   border-color: rgba(220,74,26,0.2); }
+  .role-select[data-type="조합"]       { background: var(--rust-light);   color: var(--rust);   border-color: rgba(220,74,26,0.2); }
+  .role-select[data-type="정비사업자"] { background: var(--rust-light);   color: var(--rust);   border-color: rgba(220,74,26,0.2); }
+  .role-select[data-type="시공사"]     { background: var(--amber-light);  color: var(--amber);  border-color: rgba(217,119,6,0.2); }
+  .role-select[data-type="건축"]       { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
+  .role-select[data-type="구조"]       { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
+  .role-select[data-type="기계"]       { background: var(--green-light);  color: var(--green);  border-color: rgba(22,163,74,0.2); }
+  .role-select[data-type="전기"]       { background: var(--green-light);  color: var(--green);  border-color: rgba(22,163,74,0.2); }
+  .role-select[data-type="소방"]       { background: #fff1f2;             color: #e11d48;       border-color: rgba(225,29,72,0.2); }
+  .role-select[data-type="조경"]       { background: #f0fdf4;             color: #15803d;       border-color: rgba(21,128,61,0.2); }
+  .role-select[data-type="토목"]       { background: #fafaf9;             color: #57534e;       border-color: rgba(87,83,78,0.2); }
+  .role-select[data-type="친환경"]     { background: #ecfdf5;             color: #059669;       border-color: rgba(5,150,105,0.2); }
+  .role-select[data-type="인허가"]     { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
+  .role-select[data-type="직접입력"]   { background: #faf5ff;             color: #7c3aed;       border-color: rgba(124,58,237,0.2); }
+  .role-custom-input {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: #7c3aed;
+    outline: none;
+    width: 80px;
+    display: none;
+    margin-top: 3px;
+  }
+
+  /* ── 액션 바 (저장/불러오기/인쇄) ── */
+  .action-bar {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .btn-action {
+    padding: 9px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .btn-save   { background: var(--accent); color: #fff; }
+  .btn-save:hover { background: #1d4ed8; }
+  .btn-load   { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-load:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-print2 { background: var(--text); color: #fff; }
+  .btn-print2:hover { background: #374151; }
+  .toast {
+    position: fixed;
+    bottom: 76px;
+    right: 28px;
+    background: var(--text);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── 이슈 카드 ── */
+  .issue-list { display: flex; flex-direction: column; gap: 10px; }
+  .issue-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .issue-card.priority-high { border-left: 3px solid var(--red); }
+  .issue-card.priority-mid  { border-left: 3px solid var(--amber); }
+  .issue-card.priority-low  { border-left: 3px solid var(--border-strong); }
+
+  .issue-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .priority-selector {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .priority-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-weight: 500;
+  }
+  .priority-btn:hover { border-color: var(--border-strong); color: var(--text-secondary); }
+  .priority-btn.active-high { background: #fef2f2; border-color: var(--red); color: var(--red); }
+  .priority-btn.active-mid  { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+  .priority-btn.active-low  { background: var(--surface2); border-color: var(--border-strong); color: var(--text-secondary); }
+
+  .issue-title-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+  }
+  .issue-body { padding: 12px 14px; }
+  .issue-body textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    color: var(--text-secondary);
+    outline: none;
+    resize: none;
+    line-height: 1.7;
+    min-height: 56px;
+  }
+  .issue-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 14px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .issue-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .issue-meta-item input {
+    border: none;
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-secondary);
+    outline: none;
+    width: 90px;
+  }
+  .issue-del-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border-strong);
+    font-size: 13px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: all 0.12s;
+  }
+  .issue-del-btn:hover { color: var(--red); background: #fff0f0; }
+
+  /* ── 노트 박스 ── */
+  .note-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+  .note-box textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    resize: none;
+    line-height: 1.8;
+    min-height: 56px;
+  }
+  .note-del-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border-strong);
+    font-size: 13px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: all 0.12s;
+  }
+  .note-del-btn:hover { color: var(--red); background: #fff0f0; }
+
+  /* ── 추가 버튼 ── */
+  .btn-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    margin-top: 10px;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* ── 08 확인 섹션 ── */
+  .confirm-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .confirm-box { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .confirm-box-header {
+    background: var(--text);
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .confirm-box-body { padding: 20px 16px; background: var(--surface); }
+  .confirm-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .confirm-field:last-child { margin-bottom: 0; }
+  .confirm-field label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .confirm-field input {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    padding-bottom: 4px;
+    width: 100%;
+    transition: border-color 0.12s;
+  }
+  .confirm-field input:focus { border-bottom-color: var(--accent); }
+  .confirm-check {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .confirm-check input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .confirm-check span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .confirm-check:has(input:checked) { background: var(--accent-light); border-color: var(--accent); }
+  .confirm-check:has(input:checked) span { color: var(--accent); }
+
+  /* ── 인쇄 버튼 ── */
+  .print-bar { position: fixed; bottom: 28px; right: 28px; }
+  .btn-print {
+    background: var(--text);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .btn-print:hover { background: var(--accent); }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--surface2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  @media print {
+    .print-bar, .btn-delete, .btn-add, .issue-del-btn, .note-del-btn { display: none !important; }
+    .doc-body { display: block; }
+    .sidebar { display: none; }
+    .content { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="header-eyebrow">Project Handover Document · 업무 인수인계서</div>
+  <div class="header-title">프로젝트 인수인계서</div>
+  <div class="header-subtitle">공동주택 건축설계 프로젝트</div>
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">작성일</span>
+      <div class="meta-value"><input type="text" value="2026-05-29" /></div>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">프로젝트명</span>
+      <div class="meta-value"><input type="text" placeholder="프로젝트명 입력" /></div>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">인수인 (전임)</span>
+      <div class="meta-value"><input type="text" placeholder="성명 / 직급" /></div>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">인수받는인 (후임)</span>
+      <div class="meta-value"><input type="text" placeholder="성명 / 직급" /></div>
+    </div>
+  </div>
+</header>
+
+<div class="progress-strip">
+  <div class="stage done"><div class="stage-dot"></div><span class="stage-name">기획·사전검토</span></div>
+  <div class="stage done"><div class="stage-dot"></div><span class="stage-name">계획설계</span></div>
+  <div class="stage current"><div class="stage-dot"></div><span class="stage-name">중간설계</span></div>
+  <div class="stage"><div class="stage-dot"></div><span class="stage-name">실시설계</span></div>
+  <div class="stage"><div class="stage-dot"></div><span class="stage-name">인허가</span></div>
+  <div class="stage"><div class="stage-dot"></div><span class="stage-name">착공·현장감리</span></div>
+  <div class="stage"><div class="stage-dot"></div><span class="stage-name">준공·사용승인</span></div>
+</div>
+
+<div class="doc-body">
+  <nav class="sidebar">
+    <div class="toc-title">목차</div>
+    <a href="#s1" class="toc-item active"><span class="toc-num">01</span>프로젝트 개요</a>
+    <a href="#s2" class="toc-item"><span class="toc-num">02</span>주요 일정 & 마일스톤</a>
+    <a href="#s3" class="toc-item"><span class="toc-num">03</span>핵심 도서 & 파일</a>
+    <a href="#s4" class="toc-item"><span class="toc-num">04</span>관계자 & 협업</a>
+    <a href="#s5" class="toc-item"><span class="toc-num">05</span>담당 업무 & 루틴</a>
+    <a href="#s6" class="toc-item"><span class="toc-num">06</span>미결 이슈 & 리스크</a>
+    <a href="#s7" class="toc-item"><span class="toc-num">07</span>특이사항 & 히스토리</a>
+    <a href="#s8" class="toc-item"><span class="toc-num">08</span>확인</a>
+  </nav>
+
+  <main class="content">
+
+    <!-- S1 -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">프로젝트 개요</span>
+        <span class="section-badge">Overview</span>
+      </div>
+      <div class="field-grid three">
+        <div class="field"><span class="field-label">발주처 (클라이언트)</span><input type="text" placeholder="예) ○○건설(주)" /></div>
+        <div class="field"><span class="field-label">사업지 위치</span><input type="text" placeholder="예) 경기도 화성시 ○○동 xxx" /></div>
+        <div class="field"><span class="field-label">용도·규모</span><input type="text" placeholder="예) 공동주택 지하2/지상25층 450세대" /></div>
+      </div>
+      <div class="field-grid three">
+        <div class="field"><span class="field-label">대지면적</span><input type="text" placeholder="㎡" /></div>
+        <div class="field"><span class="field-label">연면적</span><input type="text" placeholder="㎡" /></div>
+        <div class="field"><span class="field-label">용적률 / 건폐율</span><input type="text" placeholder="예) 230% / 18%" /></div>
+      </div>
+      <div class="field-grid three">
+        <div class="field"><span class="field-label">주차대수</span><input type="text" placeholder="예) 600대 (세대당 1.3대)" /></div>
+        <div class="field"><span class="field-label">계약 형태</span><input type="text" placeholder="예) 실시설계 용역" /></div>
+        <div class="field"><span class="field-label">용역 기간</span><input type="text" placeholder="예) 2025-03-01 ~ 2026-09-30" /></div>
+      </div>
+      <div class="field-grid full">
+        <div class="field"><span class="field-label">현재 설계 단계</span><input type="text" placeholder="예) 중간설계 80% 완료" /></div>
+      </div>
+      <div class="field-grid full">
+        <div class="field"><span class="field-label">프로젝트 특이 조건 및 핵심 제약사항</span><textarea placeholder="예) 인접 학교 일조사선 적용, 지구단위계획 높이 제한 45m, 소방차 전용구역 요건 별도 협의 필요 등"></textarea></div>
+      </div>
+    </section>
+
+    <!-- S2 -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">주요 일정 & 마일스톤</span>
+        <span class="section-badge">Schedule</span>
+      </div>
+      <div class="milestone-list" id="milestoneList">
+        <div class="milestone-item">
+          <div class="milestone-date"><input type="text" value="2025-03-01" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="milestone-dot done"></div><div class="milestone-line"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="계획설계 착수" /><textarea>발주처 킥오프 미팅 완료. 지구단위계획 조건 확인.</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn active-done" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-date"><input type="text" value="2025-07-15" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="milestone-dot done"></div><div class="milestone-line"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="계획설계 완료 / 중간설계 착수" /><textarea>계획설계 보고 승인. 세대 평면 확정 (84A/84B/101타입).</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn active-done" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-date"><input type="text" value="2026-06-30" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="milestone-dot current"></div><div class="milestone-line"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="중간설계 완료 예정" /><textarea>구조·MEP 협력사 조율 진행 중. 지하주차장 램프 위치 미결.</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn active-current" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-date"><input type="text" value="2026-10-31" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="milestone-dot"></div><div class="milestone-line"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="실시설계 완료" /><textarea>전 도서 납품 및 인허가 신청 예정.</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn active-pending" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="milestone-item">
+          <div class="milestone-date"><input type="text" value="2027-02-28" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="milestone-dot"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="건축허가 취득 목표" /><textarea>용역 종료. 발주처 자체 시공사 선정 예정.</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn active-pending" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()" title="삭제">✕</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addMilestone()">+ 마일스톤 추가</button>
+    </section>
+
+    <!-- S3 -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">핵심 도서 & 파일 위치</span>
+        <span class="section-badge">Documents</span>
+      </div>
+      <div class="file-list" id="fileList">
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg" selected>DWG</option><option value="pdf">PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">배치도 / 평면도 / 입면도 / 단면도</div><div class="file-note">최신 Rev. 확인 필수 — Rev.C 기준 (2026-04-20)</div></div>
+          <span class="file-path">\\서버\프로젝트\설계도서\건축\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg" selected>DWG</option><option value="pdf">PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">지하주차장 평면도</div><div class="file-note">램프 위치 변경 협의 중 — 최종 미확정</div></div>
+          <span class="file-path">\\서버\프로젝트\설계도서\주차장\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg">DWG</option><option value="pdf" selected>PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">지구단위계획 결정서 및 구역 지형도</div><div class="file-note">2023년 결정 / 2025 변경 고시 포함</div></div>
+          <span class="file-path">\\서버\프로젝트\법규검토\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg">DWG</option><option value="pdf" selected>PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">구조 협의 검토 보고서 (협력사)</div><div class="file-note">○○구조 제출본 — 2차 검토 반영 대기</div></div>
+          <span class="file-path">\\서버\프로젝트\협력사\구조\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg">DWG</option><option value="pdf">PDF</option><option value="xls" selected>XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">면적표 (대지·건축·세대·공용)</div><div class="file-note">발주처 면적 검토 요청사항 반영 필요</div></div>
+          <span class="file-path">\\서버\프로젝트\면적표\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+        <div class="file-item">
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg">DWG</option><option value="pdf" selected>PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+          </select>
+          <div><div class="file-name">설계 용역 계약서 및 과업지시서</div><div class="file-note">변경 계약 1회 포함 — 별도 보관</div></div>
+          <span class="file-path">\\서버\계약서\</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addFile()">+ 파일 항목 추가</button>
+    </section>
+
+    <!-- S4 -->
+    <section class="section" id="s4">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">관계자 & 협업 채널</span>
+        <span class="section-badge">Stakeholders</span>
+      </div>
+      <table class="contact-table">
+        <thead>
+          <tr>
+            <th>구분</th><th>소속 / 회사</th><th>담당자</th><th>연락처</th><th>역할 / 협업 내용</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="contactBody">
+          <tr>
+            <td><select class="role-select" data-type="발주처" onchange="updateRoleColor(this)"><option>건축</option><option>구조</option><option>기계</option><option>전기</option><option>소방</option><option>조경</option><option>토목</option><option>친환경</option><option selected>발주처</option><option>시공사</option><option>조합</option><option>정비사업자</option><option>인허가</option><option>직접입력</option></select><input class="role-custom-input" placeholder="직접입력" /></td>
+            <td><input type="text" value="○○건설(주)" /></td>
+            <td><input type="text" value="홍길동 차장" /></td>
+            <td><input type="text" value="010-0000-0000" /></td>
+            <td><input type="text" value="설계 의사결정 총괄, 주 2회 협의" /></td>
+            <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>
+          </tr>
+          <tr>
+            <td><select class="role-select" data-type="인허가" onchange="updateRoleColor(this)"><option>건축</option><option>구조</option><option>기계</option><option>전기</option><option>소방</option><option>조경</option><option>토목</option><option>친환경</option><option>발주처</option><option>시공사</option><option>조합</option><option>정비사업자</option><option selected>인허가</option><option>직접입력</option></select><input class="role-custom-input" placeholder="직접입력" /></td>
+            <td><input type="text" value="○○시 건축과" /></td>
+            <td><input type="text" value="담당 공무원 미정" /></td>
+            <td><input type="text" value="031-000-0000" /></td>
+            <td><input type="text" value="건축 허가 사전 협의 진행 예정" /></td>
+            <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>
+          </tr>
+          <tr>
+            <td><select class="role-select" data-type="구조" onchange="updateRoleColor(this)"><option>건축</option><option selected>구조</option><option>기계</option><option>전기</option><option>소방</option><option>조경</option><option>토목</option><option>친환경</option><option>발주처</option><option>시공사</option><option>조합</option><option>정비사업자</option><option>인허가</option><option>직접입력</option></select><input class="role-custom-input" placeholder="직접입력" /></td>
+            <td><input type="text" value="○○구조 엔지니어링" /></td>
+            <td><input type="text" value="이담당 이사" /></td>
+            <td><input type="text" value="010-0000-0000" /></td>
+            <td><input type="text" value="구조 협력, 격주 화요일 미팅" /></td>
+            <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>
+          </tr>
+          <tr>
+            <td><select class="role-select" data-type="기계" onchange="updateRoleColor(this)"><option>건축</option><option>구조</option><option selected>기계</option><option>전기</option><option>소방</option><option>조경</option><option>토목</option><option>친환경</option><option>발주처</option><option>시공사</option><option>조합</option><option>정비사업자</option><option>인허가</option><option>직접입력</option></select><input class="role-custom-input" placeholder="직접입력" /></td>
+            <td><input type="text" value="○○엔지니어링" /></td>
+            <td><input type="text" value="박담당 팀장" /></td>
+            <td><input type="text" value="010-0000-0000" /></td>
+            <td><input type="text" value="MEP 협력, 주간 조율 회의" /></td>
+            <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn-add" onclick="addContact()">+ 관계자 추가</button>
+      <div class="field-grid full" style="margin-top:24px;">
+        <div class="field"><span class="field-label">메인 협업 채널</span><input type="text" placeholder="예) 카카오톡 단톡방 / 이메일" /></div>
+      </div>
+    </section>
+
+    <!-- S5 -->
+    <section class="section" id="s5">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">담당 업무 & 루틴</span>
+        <span class="section-badge">Responsibilities</span>
+      </div>
+      <div class="field-grid">
+        <div class="field"><span class="field-label">일간 / 수시 업무</span><textarea placeholder="예)&#10;- 도면 Rev. 관리 및 협력사 배포&#10;- 발주처 질의사항 답변&#10;- 사내 설계 검토 의견 반영"></textarea></div>
+        <div class="field"><span class="field-label">주간 / 정기 업무</span><textarea placeholder="예)&#10;- 매주 목요일 발주처 협의 참석&#10;- 격주 구조 협력사 미팅&#10;- 주간 진도 보고서 작성 (PM 보고)"></textarea></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><span class="field-label">월간 / 중요 업무</span><textarea placeholder="예)&#10;- 발주처 월간 설계 보고 (PPT)&#10;- 면적표 업데이트 및 배포&#10;- 협력사 산출물 수령 및 검토"></textarea></div>
+        <div class="field"><span class="field-label">의사결정 보고 체계</span><textarea placeholder="예)&#10;- 경미한 설계 변경: 담당자 자체 처리&#10;- 발주처 영향 사항: PM 사전 보고 후 협의&#10;- 계약 범위 변경: 소장 결재"></textarea></div>
+      </div>
+    </section>
+
+    <!-- S6 -->
+    <section class="section" id="s6">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">미결 이슈 & 리스크</span>
+        <span class="section-badge">Issues</span>
+      </div>
+      <div class="issue-list" id="issueList">
+        <div class="issue-card priority-high">
+          <div class="issue-header">
+            <div class="priority-selector">
+              <button class="priority-btn active-high" onclick="setPriority(this,'high')">HIGH</button>
+              <button class="priority-btn" onclick="setPriority(this,'mid')">MID</button>
+              <button class="priority-btn" onclick="setPriority(this,'low')">LOW</button>
+            </div>
+            <input class="issue-title-input" type="text" value="지하주차장 램프 위치 — 발주처 미결" />
+          </div>
+          <div class="issue-body"><textarea>발주처 요청으로 램프를 북측에서 동측으로 이동 검토 중. 구조 협력사 타당성 검토 미완료 상태. 다음 협의 전 구조사 답변 확인 후 발주처 보고 필요.</textarea></div>
+          <div class="issue-footer">
+            <div class="issue-meta-item">담당: <input type="text" value="인수자 인계 즉시" /></div>
+            <div class="issue-meta-item">기한: <input type="text" value="2026-06-10" /></div>
+            <div class="issue-meta-item">관련: <input type="text" value="구조사, PM" /></div>
+            <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
+          </div>
+        </div>
+        <div class="issue-card priority-mid">
+          <div class="issue-header">
+            <div class="priority-selector">
+              <button class="priority-btn" onclick="setPriority(this,'high')">HIGH</button>
+              <button class="priority-btn active-mid" onclick="setPriority(this,'mid')">MID</button>
+              <button class="priority-btn" onclick="setPriority(this,'low')">LOW</button>
+            </div>
+            <input class="issue-title-input" type="text" value="일조권 사선 재검토 요청 (○○동 인접)" />
+          </div>
+          <div class="issue-body"><textarea>인접 대지 경계로부터 일조사선 시뮬레이션 재검토 요청. 현재 CAD 모델 기준 OK 판정이나 발주처 자체 일조 민원 우려로 추가 검토 요구 중.</textarea></div>
+          <div class="issue-footer">
+            <div class="issue-meta-item">담당: <input type="text" value="건축담당자" /></div>
+            <div class="issue-meta-item">기한: <input type="text" value="2026-06-30" /></div>
+            <div class="issue-meta-item">관련: <input type="text" value="발주처, PM" /></div>
+            <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
+          </div>
+        </div>
+        <div class="issue-card priority-low">
+          <div class="issue-header">
+            <div class="priority-selector">
+              <button class="priority-btn" onclick="setPriority(this,'high')">HIGH</button>
+              <button class="priority-btn" onclick="setPriority(this,'mid')">MID</button>
+              <button class="priority-btn active-low" onclick="setPriority(this,'low')">LOW</button>
+            </div>
+            <input class="issue-title-input" type="text" value="옥상 부속 구조물 마감재 미결정" />
+          </div>
+          <div class="issue-body"><textarea>발주처 인테리어팀 선정 후 결정 예정. 실시설계 도서 완성 전 확인 필요.</textarea></div>
+          <div class="issue-footer">
+            <div class="issue-meta-item">담당: <input type="text" value="발주처 확인 후" /></div>
+            <div class="issue-meta-item">기한: <input type="text" value="실시설계 전" /></div>
+            <div class="issue-meta-item">관련: <input type="text" value="발주처" /></div>
+            <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addIssue()">+ 이슈 추가</button>
+    </section>
+
+    <!-- S7 -->
+    <section class="section" id="s7">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <span class="section-title">특이사항 & 히스토리</span>
+        <span class="section-badge">Context</span>
+      </div>
+      <div class="note-box">
+        <button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button>
+        <textarea placeholder="발주처 성향·히스토리&#10;예) 발주처 홍 차장님은 도면보다 PPT 보고 선호. 협의 시 3D 이미지 반드시 첨부. 이메일 회신 빠르지 않으므로 카톡 병행 필수."></textarea>
+      </div>
+      <div class="note-box">
+        <button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button>
+        <textarea placeholder="설계 변경 이력 및 채택 이유&#10;예) 계획설계 당시 84B타입 발코니를 남향에서 동향으로 변경한 이유 — 인접 동과의 이격거리 확보를 위한 의사결정 (2025-09-12 협의록 참조)."></textarea>
+      </div>
+      <div class="note-box">
+        <button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button>
+        <textarea placeholder="법규 및 관청 협의 히스토리&#10;예) 건축과 사전협의(2026-02) 결과: 높이 제한 완화 불가 확인. 단, 옥탑층 기계실 면적 산입 기준 협의 여지 있음."></textarea>
+      </div>
+      <button class="btn-add" onclick="addNote()">+ 메모 추가</button>
+    </section>
+
+    <!-- S8 -->
+    <section class="section" id="s8">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <span class="section-title">확인</span>
+        <span class="section-badge">Sign-off</span>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-box">
+          <div class="confirm-box-header">인수인 (전임자)</div>
+          <div class="confirm-box-body">
+            <div class="confirm-field"><label>성명</label><input type="text" placeholder="홍길동" /></div>
+            <div class="confirm-field"><label>직급</label><input type="text" placeholder="수석 / 선임 건축사" /></div>
+            <div class="confirm-field"><label>확인일</label><input type="text" placeholder="2026-05-29" /></div>
+            <label class="confirm-check">
+              <input type="checkbox" />
+              <span>인수인계 내용을 확인하였습니다</span>
+            </label>
+          </div>
+        </div>
+        <div class="confirm-box">
+          <div class="confirm-box-header">인수받는인 (후임자)</div>
+          <div class="confirm-box-body">
+            <div class="confirm-field"><label>성명</label><input type="text" placeholder="김담당" /></div>
+            <div class="confirm-field"><label>직급</label><input type="text" placeholder="건축사 / 소장" /></div>
+            <div class="confirm-field"><label>확인일</label><input type="text" placeholder="2026-05-__" /></div>
+            <label class="confirm-check">
+              <input type="checkbox" />
+              <span>인수인계 내용을 확인하였습니다</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="action-bar">
+  <button class="btn-action btn-load" onclick="loadData()">불러오기</button>
+  <button class="btn-action btn-save" onclick="saveData()">저장</button>
+  <button class="btn-action btn-print2" onclick="window.print()">인쇄 / PDF</button>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="onFileLoad(event)" />
+
+<script>
+  /* ── 목차 활성화 ── */
+  const sections = document.querySelectorAll('.section');
+  const tocItems = document.querySelectorAll('.toc-item');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+    tocItems.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#' + cur));
+  });
+
+  /* ── 구분 드롭다운 ── */
+  const ROLE_OPTS = ['건축','구조','기계','전기','소방','조경','토목','친환경','발주처','시공사','조합','정비사업자','인허가','직접입력'];
+  function roleSelectHTML(selected) {
+    return ROLE_OPTS.map(o => `<option${o===selected?' selected':''}>${o}</option>`).join('');
+  }
+  function updateRoleColor(sel) {
+    const v = sel.value;
+    sel.setAttribute('data-type', v);
+    const ci = sel.nextElementSibling;
+    if (ci && ci.classList.contains('role-custom-input'))
+      ci.style.display = v === '직접입력' ? 'block' : 'none';
+  }
+  document.querySelectorAll('.role-select').forEach(updateRoleColor);
+
+  /* ── 파일 타입 색상 ── */
+  const fileColors = {
+    dwg: { bg:'var(--rust-light)',   color:'var(--rust)',   border:'rgba(220,74,26,0.2)' },
+    pdf: { bg:'var(--accent-light)', color:'var(--accent)', border:'rgba(37,99,235,0.2)' },
+    xls: { bg:'var(--green-light)',  color:'var(--green)',  border:'rgba(22,163,74,0.2)' },
+    hwp: { bg:'#f0f7ff',             color:'#1e6fcc',       border:'rgba(30,111,204,0.2)' },
+  };
+  function updateFileIcon(sel) {
+    const c = fileColors[sel.value] || {};
+    sel.style.background  = c.bg    || '';
+    sel.style.color       = c.color || '';
+    sel.style.borderColor = c.border|| '';
+  }
+  document.querySelectorAll('.file-type-select').forEach(updateFileIcon);
+
+  /* ── 마일스톤 상태 ── */
+  function setMsStatus(btn, status) {
+    btn.closest('.milestone-status-row').querySelectorAll('.ms-btn').forEach(b => b.className = 'ms-btn');
+    btn.className = 'ms-btn active-' + status;
+    const dot = btn.closest('.milestone-item').querySelector('.milestone-dot');
+    dot.className = 'milestone-dot' + (status === 'pending' ? '' : ' ' + status);
+  }
+
+  /* ── 이슈 우선순위 ── */
+  function setPriority(btn, level) {
+    btn.closest('.issue-card').className = 'issue-card priority-' + level;
+    btn.closest('.priority-selector').querySelectorAll('.priority-btn').forEach(b => b.className = 'priority-btn');
+    btn.className = 'priority-btn active-' + level;
+  }
+
+  /* ── 토스트 ── */
+  function showToast(msg, ok=true) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = ok ? 'var(--accent)' : '#e11d48';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* ── 직렬화 ── */
+  function serializeContactRows() {
+    return [...document.querySelectorAll('#contactBody tr')].map(tr => {
+      const sel = tr.querySelector('.role-select');
+      const ci  = tr.querySelector('.role-custom-input');
+      const inp = [...tr.querySelectorAll('td input[type=text]')];
+      return { role: sel?.value||'건축', customRole: ci?.value||'', company: inp[0]?.value||'', person: inp[1]?.value||'', contact: inp[2]?.value||'', desc: inp[3]?.value||'' };
+    });
+  }
+  function serializeMilestones() {
+    return [...document.querySelectorAll('#milestoneList .milestone-item')].map(item => {
+      const ab = item.querySelector('.ms-btn[class*=active-]');
+      return {
+        date:   item.querySelector('.ms-date-input')?.value||'',
+        title:  item.querySelector('.milestone-content > input')?.value||'',
+        body:   item.querySelector('.milestone-content textarea')?.value||'',
+        status: ab ? ab.className.replace('ms-btn active-','') : 'pending',
+      };
+    });
+  }
+  function serializeFileItems() {
+    return [...document.querySelectorAll('#fileList .file-item')].map(item => {
+      const sel = item.querySelector('.file-type-select');
+      const nameEl = item.querySelector('.file-name');
+      const noteEl = item.querySelector('.file-note');
+      const pathEl = item.querySelector('.file-path');
+      const nameIn = item.querySelectorAll('input[type=text]')[0];
+      const noteIn = item.querySelectorAll('input[type=text]')[1];
+      const pathIn = item.querySelectorAll('input[type=text]')[2];
+      return {
+        type: sel?.value||'pdf',
+        name: nameEl?.textContent||nameIn?.value||'',
+        note: noteEl?.textContent||noteIn?.value||'',
+        path: pathEl?.textContent||pathIn?.value||'',
+      };
+    });
+  }
+  function serializeIssues() {
+    return [...document.querySelectorAll('#issueList .issue-card')].map(card => {
+      const pm = card.className.match(/priority-(\w+)/);
+      const inp = [...card.querySelectorAll('.issue-meta-item input')];
+      return { priority:(pm||['','low'])[1], title:card.querySelector('.issue-title-input')?.value||'', body:card.querySelector('.issue-body textarea')?.value||'', assign:inp[0]?.value||'', due:inp[1]?.value||'', related:inp[2]?.value||'' };
+    });
+  }
+  function serializeNotes() {
+    return [...document.querySelectorAll('#s7 .note-box textarea')].map(t=>t.value);
+  }
+  function serializeS1() {
+    return [...document.querySelectorAll('#s1 input, #s1 textarea')].map(e=>e.value);
+  }
+  function serializeS5() {
+    return [...document.querySelectorAll('#s5 textarea')].map(e=>e.value);
+  }
+  function serializeS8() {
+    return [...document.querySelectorAll('#s8 input[type=text]')].map(e=>e.value)
+      .concat([...document.querySelectorAll('#s8 input[type=checkbox]')].map(e=>e.checked));
+  }
+  function serializeChannels() {
+    return [...document.querySelectorAll('#s4 .field input')].map(e=>e.value);
+  }
+
+  /* ── 저장 ── */
+  function saveData() {
+    const data = {
+      version: 2,
+      savedAt: new Date().toISOString(),
+      headerInputs: [...document.querySelectorAll('.header-meta input')].map(i=>i.value),
+      s1: serializeS1(),
+      milestones: serializeMilestones(),
+      fileItems: serializeFileItems(),
+      contactRows: serializeContactRows(),
+      channels: serializeChannels(),
+      s5: serializeS5(),
+      issues: serializeIssues(),
+      notes: serializeNotes(),
+      s8: serializeS8(),
+    };
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const proj = (document.querySelectorAll('.header-meta input')[1]?.value||'인수인계서').replace(/\s+/g,'_');
+    a.download = proj + '_handover.json';
+    a.click();
+    showToast('저장 완료 — JSON 다운로드');
+  }
+
+  /* ── 불러오기 ── */
+  function loadData() { document.getElementById('fileInput').click(); }
+  function onFileLoad(e) {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try { restoreData(JSON.parse(ev.target.result)); showToast('불러오기 완료'); }
+      catch { showToast('파일 형식 오류', false); }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  function restoreData(d) {
+    // 헤더
+    if(d.headerInputs) {
+      document.querySelectorAll('.header-meta input').forEach((el,i)=>{ if(d.headerInputs[i]!==undefined) el.value=d.headerInputs[i]; });
+    }
+    // S1
+    if(d.s1) {
+      const els = [...document.querySelectorAll('#s1 input, #s1 textarea')];
+      d.s1.forEach((v,i)=>{ if(els[i]) els[i].value=v; });
+    }
+    // 마일스톤
+    if(d.milestones) {
+      const list = document.getElementById('milestoneList');
+      list.innerHTML = '';
+      d.milestones.forEach(m => {
+        const dc = m.status==='pending' ? 'milestone-dot' : 'milestone-dot '+m.status;
+        const item = document.createElement('div');
+        item.className = 'milestone-item';
+        item.innerHTML = `
+          <div class="milestone-date"><input type="text" value="${escH(m.date)}" class="ms-date-input" /></div>
+          <div class="milestone-track"><div class="${dc}"></div><div class="milestone-line"></div></div>
+          <div class="milestone-content">
+            <input type="text" value="${escH(m.title)}" />
+            <textarea>${escH(m.body)}</textarea>
+            <div class="milestone-status-row">
+              <button class="ms-btn${m.status==='done'?' active-done':''}" onclick="setMsStatus(this,'done')">완료</button>
+              <button class="ms-btn${m.status==='current'?' active-current':''}" onclick="setMsStatus(this,'current')">진행중</button>
+              <button class="ms-btn${m.status==='pending'?' active-pending':''}" onclick="setMsStatus(this,'pending')">예정</button>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="this.closest('.milestone-item').remove()">✕</button>`;
+        list.appendChild(item);
+      });
+    }
+    // 파일
+    if(d.fileItems) {
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+      d.fileItems.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `
+          <select class="file-type-select" onchange="updateFileIcon(this)">
+            <option value="dwg"${f.type==='dwg'?' selected':''}>DWG</option>
+            <option value="pdf"${f.type==='pdf'?' selected':''}>PDF</option>
+            <option value="xls"${f.type==='xls'?' selected':''}>XLS</option>
+            <option value="hwp"${f.type==='hwp'?' selected':''}>HWP</option>
+          </select>
+          <div><div class="file-name">${escH(f.name)}</div><div class="file-note">${escH(f.note)}</div></div>
+          <span class="file-path">${escH(f.path)}</span>
+          <button class="btn-delete" onclick="this.closest('.file-item').remove()">✕</button>`;
+        list.appendChild(item);
+        updateFileIcon(item.querySelector('.file-type-select'));
+      });
+    }
+    // 관계자
+    if(d.contactRows) {
+      const tbody = document.getElementById('contactBody');
+      tbody.innerHTML = '';
+      d.contactRows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <select class="role-select" data-type="${escH(r.role)}" onchange="updateRoleColor(this)">${roleSelectHTML(r.role)}</select>
+            <input class="role-custom-input" placeholder="직접입력" value="${escH(r.customRole)}" style="display:${r.role==='직접입력'?'block':'none'}" />
+          </td>
+          <td><input type="text" value="${escH(r.company)}" /></td>
+          <td><input type="text" value="${escH(r.person)}" /></td>
+          <td><input type="text" value="${escH(r.contact)}" /></td>
+          <td><input type="text" value="${escH(r.desc)}" /></td>
+          <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>`;
+        tbody.appendChild(tr);
+        updateRoleColor(tr.querySelector('.role-select'));
+      });
+    }
+    // 채널
+    if(d.channels) {
+      document.querySelectorAll('#s4 .field input').forEach((el,i)=>{ if(d.channels[i]!==undefined) el.value=d.channels[i]; });
+    }
+    // S5
+    if(d.s5) {
+      document.querySelectorAll('#s5 textarea').forEach((el,i)=>{ if(d.s5[i]!==undefined) el.value=d.s5[i]; });
+    }
+    // 이슈
+    if(d.issues) {
+      const list = document.getElementById('issueList');
+      list.innerHTML = '';
+      d.issues.forEach(iss => {
+        const card = document.createElement('div');
+        card.className = `issue-card priority-${iss.priority}`;
+        card.innerHTML = `
+          <div class="issue-header">
+            <div class="priority-selector">
+              <button class="priority-btn${iss.priority==='high'?' active-high':''}" onclick="setPriority(this,'high')">HIGH</button>
+              <button class="priority-btn${iss.priority==='mid'?' active-mid':''}" onclick="setPriority(this,'mid')">MID</button>
+              <button class="priority-btn${iss.priority==='low'?' active-low':''}" onclick="setPriority(this,'low')">LOW</button>
+            </div>
+            <input class="issue-title-input" type="text" value="${escH(iss.title)}" />
+          </div>
+          <div class="issue-body"><textarea>${escH(iss.body)}</textarea></div>
+          <div class="issue-footer">
+            <div class="issue-meta-item">담당: <input type="text" value="${escH(iss.assign)}" /></div>
+            <div class="issue-meta-item">기한: <input type="text" value="${escH(iss.due)}" /></div>
+            <div class="issue-meta-item">관련: <input type="text" value="${escH(iss.related)}" /></div>
+            <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
+          </div>`;
+        list.appendChild(card);
+      });
+    }
+    // 메모
+    if(d.notes) {
+      const s7 = document.getElementById('s7');
+      s7.querySelectorAll('.note-box').forEach(n=>n.remove());
+      const addBtn = s7.querySelector('.btn-add');
+      d.notes.forEach(text => {
+        const note = document.createElement('div');
+        note.className = 'note-box';
+        note.innerHTML = `<button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button><textarea>${escH(text)}</textarea>`;
+        addBtn.before(note);
+      });
+    }
+    // S8
+    if(d.s8) {
+      const textInputs = [...document.querySelectorAll('#s8 input[type=text]')];
+      const checkboxes = [...document.querySelectorAll('#s8 input[type=checkbox]')];
+      const tLen = textInputs.length;
+      textInputs.forEach((el,i)=>{ if(d.s8[i]!==undefined) el.value=d.s8[i]; });
+      checkboxes.forEach((el,i)=>{ if(d.s8[tLen+i]!==undefined) el.checked=d.s8[tLen+i]; });
+    }
+  }
+
+  function escH(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── 항목 추가 ── */
+  function addMilestone() {
+    const item = document.createElement('div');
+    item.className = 'milestone-item';
+    item.innerHTML = `
+      <div class="milestone-date"><input type="text" placeholder="YYYY-MM-DD" class="ms-date-input" /></div>
+      <div class="milestone-track"><div class="milestone-dot"></div></div>
+      <div class="milestone-content">
+        <input type="text" placeholder="마일스톤 명" />
+        <textarea placeholder="내용 입력"></textarea>
+        <div class="milestone-status-row">
+          <button class="ms-btn" onclick="setMsStatus(this,'done')">완료</button>
+          <button class="ms-btn" onclick="setMsStatus(this,'current')">진행중</button>
+          <button class="ms-btn active-pending" onclick="setMsStatus(this,'pending')">예정</button>
+        </div>
+      </div>
+      <button class="btn-delete" onclick="this.closest('.milestone-item').remove()">✕</button>`;
+    document.getElementById('milestoneList').appendChild(item);
+  }
+
+  function addIssue() {
+    const card = document.createElement('div');
+    card.className = 'issue-card priority-low';
+    card.innerHTML = `
+      <div class="issue-header">
+        <div class="priority-selector">
+          <button class="priority-btn" onclick="setPriority(this,'high')">HIGH</button>
+          <button class="priority-btn" onclick="setPriority(this,'mid')">MID</button>
+          <button class="priority-btn active-low" onclick="setPriority(this,'low')">LOW</button>
+        </div>
+        <input class="issue-title-input" type="text" placeholder="이슈 제목" />
+      </div>
+      <div class="issue-body"><textarea placeholder="이슈 내용 및 대응 방향"></textarea></div>
+      <div class="issue-footer">
+        <div class="issue-meta-item">담당: <input type="text" placeholder="담당자" /></div>
+        <div class="issue-meta-item">기한: <input type="text" placeholder="YYYY-MM-DD" /></div>
+        <div class="issue-meta-item">관련: <input type="text" placeholder="관련자" /></div>
+        <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
+      </div>`;
+    document.getElementById('issueList').appendChild(card);
+  }
+
+  function addFile() {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <select class="file-type-select" onchange="updateFileIcon(this)">
+        <option value="dwg">DWG</option><option value="pdf">PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
+      </select>
+      <div>
+        <input type="text" placeholder="파일명 / 도서명" style="font-weight:600;" />
+        <input type="text" placeholder="설명 (Rev., 상태 등)" class="file-note-input" />
+      </div>
+      <input type="text" placeholder="파일 경로" class="file-path-input" />
+      <button class="btn-delete" style="margin-top:0" onclick="this.closest('.file-item').remove()">✕</button>`;
+    document.getElementById('fileList').appendChild(item);
+    updateFileIcon(item.querySelector('.file-type-select'));
+  }
+
+  function addContact() {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <select class="role-select" data-type="건축" onchange="updateRoleColor(this)">${roleSelectHTML('건축')}</select>
+        <input class="role-custom-input" placeholder="직접입력" />
+      </td>
+      <td><input type="text" placeholder="소속" /></td>
+      <td><input type="text" placeholder="담당자" /></td>
+      <td><input type="text" placeholder="연락처" /></td>
+      <td><input type="text" placeholder="역할" /></td>
+      <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>`;
+    document.getElementById('contactBody').appendChild(tr);
+    updateRoleColor(tr.querySelector('.role-select'));
+  }
+
+  function addNote() {
+    const note = document.createElement('div');
+    note.className = 'note-box';
+    note.innerHTML = `<button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button><textarea placeholder="내용 입력"></textarea>`;
+    document.getElementById('s7').querySelector('.btn-add').before(note);
+  }
+</script>
+</body>
+</html>
