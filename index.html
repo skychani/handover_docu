@@ -367,14 +367,28 @@
   .file-list { display: flex; flex-direction: column; gap: 6px; }
   .file-item {
     display: grid;
-    grid-template-columns: 40px 1fr 200px 28px;
+    grid-template-columns: 40px 1fr auto 28px 28px;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 10px 14px;
   }
+  .btn-copy {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border-strong);
+    font-size: 13px;
+    padding: 4px 5px;
+    border-radius: 3px;
+    transition: all 0.12s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .btn-copy:hover { color: var(--accent); background: var(--accent-light); }
+  .btn-copy.copied { color: var(--green); background: var(--green-light); }
   .file-icon {
     width: 36px; height: 36px;
     background: var(--surface2);
@@ -1007,6 +1021,7 @@
           </select>
           <div><div class="file-name">배치도 / 평면도 / 입면도 / 단면도</div><div class="file-note">최신 Rev. 확인 필수 — Rev.C 기준 (2026-04-20)</div></div>
           <span class="file-path">\\서버\프로젝트\설계도서\건축\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
         <div class="file-item">
@@ -1015,6 +1030,7 @@
           </select>
           <div><div class="file-name">지하주차장 평면도</div><div class="file-note">램프 위치 변경 협의 중 — 최종 미확정</div></div>
           <span class="file-path">\\서버\프로젝트\설계도서\주차장\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
         <div class="file-item">
@@ -1023,6 +1039,7 @@
           </select>
           <div><div class="file-name">지구단위계획 결정서 및 구역 지형도</div><div class="file-note">2023년 결정 / 2025 변경 고시 포함</div></div>
           <span class="file-path">\\서버\프로젝트\법규검토\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
         <div class="file-item">
@@ -1031,6 +1048,7 @@
           </select>
           <div><div class="file-name">구조 협의 검토 보고서 (협력사)</div><div class="file-note">○○구조 제출본 — 2차 검토 반영 대기</div></div>
           <span class="file-path">\\서버\프로젝트\협력사\구조\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
         <div class="file-item">
@@ -1039,6 +1057,7 @@
           </select>
           <div><div class="file-name">면적표 (대지·건축·세대·공용)</div><div class="file-note">발주처 면적 검토 요청사항 반영 필요</div></div>
           <span class="file-path">\\서버\프로젝트\면적표\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
         <div class="file-item">
@@ -1047,6 +1066,7 @@
           </select>
           <div><div class="file-name">설계 용역 계약서 및 과업지시서</div><div class="file-note">변경 계약 1회 포함 — 별도 보관</div></div>
           <span class="file-path">\\서버\계약서\</span>
+          <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
           <button class="btn-delete" onclick="this.closest('.file-item').remove()" title="삭제">✕</button>
         </div>
       </div>
@@ -1594,6 +1614,18 @@
     document.getElementById('issueList').appendChild(card);
   }
 
+  /* ── 경로 복사 ── */
+  function copyPath(btn) {
+    const pathEl = btn.closest('.file-item').querySelector('.file-path, .file-path-input');
+    const text = pathEl?.textContent || pathEl?.value || '';
+    if (!text.trim()) return;
+    navigator.clipboard.writeText(text.trim()).then(() => {
+      btn.textContent = '✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '⎘'; btn.classList.remove('copied'); }, 1500);
+    });
+  }
+
   function addFile() {
     const item = document.createElement('div');
     item.className = 'file-item';
@@ -1606,6 +1638,7 @@
         <input type="text" placeholder="설명 (Rev., 상태 등)" class="file-note-input" />
       </div>
       <input type="text" placeholder="파일 경로" class="file-path-input" />
+      <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
       <button class="btn-delete" style="margin-top:0" onclick="this.closest('.file-item').remove()">✕</button>`;
     document.getElementById('fileList').appendChild(item);
     updateFileIcon(item.querySelector('.file-type-select'));
