@@ -57,12 +57,43 @@
     line-height: 1.2;
     margin-bottom: 6px;
   }
-  .header-subtitle {
+  .header-title-input {
+    display: block;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: #fff;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 6px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+    padding-bottom: 2px;
+  }
+  .header-title-input:hover { border-bottom-color: rgba(255,255,255,0.2); }
+  .header-title-input:focus { border-bottom-color: rgba(255,255,255,0.5); }
+  .header-subtitle-input {
+    display: block;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Pretendard', sans-serif;
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255,255,255,0.5);
     margin-bottom: 36px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s, color 0.15s;
+    padding-bottom: 2px;
   }
+  .header-subtitle-input:hover { border-bottom-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); }
+  .header-subtitle-input:focus { border-bottom-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+  .header-subtitle-input::placeholder { color: rgba(255,255,255,0.25); }
   .header-meta {
     display: flex;
     gap: 40px;
@@ -853,8 +884,8 @@
 
 <header class="doc-header">
   <div class="header-eyebrow">Project Handover Document · 업무 인수인계서</div>
-  <div class="header-title">프로젝트 인수인계서</div>
-  <div class="header-subtitle">공동주택 건축설계 프로젝트</div>
+  <input class="header-title-input" type="text" value="프로젝트 인수인계서" placeholder="제목 입력" />
+  <input class="header-subtitle-input" type="text" value="공동주택 건축설계 프로젝트" placeholder="부제 / 프로젝트 설명 입력" />
   <div class="header-meta">
     <div class="meta-item">
       <span class="meta-label">작성일</span>
@@ -1405,6 +1436,8 @@
       version: 2,
       savedAt: new Date().toISOString(),
       headerInputs: [...document.querySelectorAll('.header-meta input')].map(i=>i.value),
+      headerTitle: document.querySelector('.header-title-input')?.value || '',
+      headerSubtitle: document.querySelector('.header-subtitle-input')?.value || '',
       s1: serializeS1(),
       milestones: serializeMilestones(),
       fileItems: serializeFileItems(),
@@ -1442,6 +1475,8 @@
     if(d.headerInputs) {
       document.querySelectorAll('.header-meta input').forEach((el,i)=>{ if(d.headerInputs[i]!==undefined) el.value=d.headerInputs[i]; });
     }
+    if(d.headerTitle !== undefined) { const el = document.querySelector('.header-title-input'); if(el) el.value = d.headerTitle; }
+    if(d.headerSubtitle !== undefined) { const el = document.querySelector('.header-subtitle-input'); if(el) el.value = d.headerSubtitle; }
     // S1
     if(d.s1) {
       const els = [...document.querySelectorAll('#s1 input, #s1 textarea')];
