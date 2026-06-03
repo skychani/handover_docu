@@ -565,23 +565,44 @@
   .role-select[data-type="구조"]       { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
   .role-select[data-type="기계"]       { background: var(--green-light);  color: var(--green);  border-color: rgba(22,163,74,0.2); }
   .role-select[data-type="전기"]       { background: var(--green-light);  color: var(--green);  border-color: rgba(22,163,74,0.2); }
-  .role-select[data-type="소방"]       { background: #fff1f2;             color: #e11d48;       border-color: rgba(225,29,72,0.2); }
-  .role-select[data-type="조경"]       { background: #f0fdf4;             color: #15803d;       border-color: rgba(21,128,61,0.2); }
-  .role-select[data-type="토목"]       { background: #fafaf9;             color: #57534e;       border-color: rgba(87,83,78,0.2); }
-  .role-select[data-type="친환경"]     { background: #ecfdf5;             color: #059669;       border-color: rgba(5,150,105,0.2); }
-  .role-select[data-type="인허가"]     { background: var(--accent-light); color: var(--accent); border-color: rgba(37,99,235,0.2); }
-  .role-select[data-type="직접입력"]   { background: #faf5ff;             color: #7c3aed;       border-color: rgba(124,58,237,0.2); }
+  .role-select[data-type="소방"]       { background: var(--role-red-bg);    color: #e11d48;  border-color: rgba(225,29,72,0.25); }
+  .role-select[data-type="조경"]       { background: var(--green-light);    color: #15803d;  border-color: rgba(21,128,61,0.25); }
+  .role-select[data-type="토목"]       { background: var(--role-stone-bg);  color: var(--role-stone-fg); border-color: rgba(87,83,78,0.2); }
+  .role-select[data-type="친환경"]     { background: var(--green-light);    color: #059669;  border-color: rgba(5,150,105,0.25); }
+  .role-select[data-type="인허가"]     { background: var(--accent-light);   color: var(--accent); border-color: rgba(37,99,235,0.2); }
+  .role-select[data-type="직접입력"]   { background: var(--role-purple-bg); color: #9d6fe8;  border-color: rgba(124,58,237,0.25); }
+
+  :root {
+    --role-red-bg:    #fff1f2;
+    --role-stone-bg:  #f5f5f4;
+    --role-stone-fg:  #57534e;
+    --role-purple-bg: #faf5ff;
+  }
+  body.dark {
+    --role-red-bg:    #2a0d12;
+    --role-stone-bg:  #1e1d1c;
+    --role-stone-fg:  #a8a29e;
+    --role-purple-bg: #1e1528;
+  }
+
   .role-custom-input {
-    border: none;
-    border-bottom: 1px solid var(--border);
-    background: transparent;
+    display: none;
+  }
+  /* 직접입력 시 select 숨김, input 표시 */
+  td:has(.role-select[data-type="직접입력"]) .role-select { display: none; }
+  td:has(.role-select[data-type="직접입력"]) .role-custom-input {
+    display: block;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
-    color: #7c3aed;
+    letter-spacing: 0.04em;
+    background: var(--role-purple-bg);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 3px;
+    padding: 3px 6px;
+    color: #9d6fe8;
+    width: 90px;
     outline: none;
-    width: 80px;
-    display: none;
-    margin-top: 3px;
+    cursor: text;
   }
 
   /* ── 액션 바 (저장/불러오기/인쇄) ── */
@@ -669,9 +690,24 @@
     font-weight: 500;
   }
   .priority-btn:hover { border-color: var(--border-strong); color: var(--text-secondary); }
-  .priority-btn.active-high { background: #fef2f2; border-color: var(--red); color: var(--red); }
-  .priority-btn.active-mid  { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
-  .priority-btn.active-low  { background: var(--surface2); border-color: var(--border-strong); color: var(--text-secondary); }
+  .priority-btn.active-high { background: var(--priority-high-bg); border-color: var(--red);   color: var(--red); }
+  .priority-btn.active-mid  { background: var(--amber-light);      border-color: var(--amber); color: var(--amber); }
+  .priority-btn.active-low  { background: var(--priority-low-bg);  border-color: var(--priority-low-fg); color: var(--priority-low-fg); }
+
+  :root {
+    --priority-high-bg: #fef2f2;
+    --priority-low-bg:  #eff6ff;
+    --priority-low-fg:  #3b82f6;
+  }
+  body.dark {
+    --priority-high-bg: #2a0d0d;
+    --priority-low-bg:  #0d1a2e;
+    --priority-low-fg:  #60a5fa;
+  }
+
+  /* issue-card LOW 테두리도 파란색으로 */
+  .issue-card.priority-low { border-left: 3px solid #3b82f6; }
+  body.dark .issue-card.priority-low { border-left: 3px solid #60a5fa; }
 
   .issue-title-input {
     flex: 1;
@@ -872,8 +908,69 @@
   ::-webkit-scrollbar-track { background: var(--surface2); }
   ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
+
+  /* ── 다크모드 ── */
+  body.dark {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242736;
+    --border: #2e3245;
+    --border-strong: #404460;
+    --text: #e8eaf0;
+    --text-secondary: #9aa0b8;
+    --text-muted: #606880;
+    --accent-light: #1a2040;
+    --rust-light: #2a1510;
+    --amber-light: #221a08;
+    --green-light: #0f1f14;
+  }
+  body.dark .doc-header { background: #070a0f; }
+  body.dark .progress-strip { background: #12151e; border-color: var(--border); }
+  body.dark .sidebar { background: var(--surface); }
+  body.dark .confirm-box-header { background: #2a2d3e; }
+  body.dark .file-icon { background: var(--surface2); }
+  /* 파일타입 select 다크모드 하드코딩 색 오버라이드 */
+  body.dark .file-type-select { color-scheme: dark; }
+
+  /* 다크모드 토글 버튼 */
+  .dark-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    backdrop-filter: blur(4px);
+  }
+  .dark-toggle:hover { background: rgba(255,255,255,0.2); }
+  body.dark .dark-toggle { background: rgba(255,255,255,0.08); color: #ffd700; border-color: rgba(255,255,255,0.1); }
+
+  /* ── 드래그 핸들 ── */
+  .drag-handle {
+    cursor: grab;
+    color: var(--border-strong);
+    font-size: 12px;
+    padding: 0 4px;
+    user-select: none;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .drag-over { outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 6px; }
+  tr.drag-over td:first-child { border-left: 3px solid var(--accent); }
+
+  /* stage 클릭 커서 */
+
+
   @media print {
-    .print-bar, .btn-delete, .btn-add, .issue-del-btn, .note-del-btn { display: none !important; }
+    .print-bar, .btn-delete, .btn-add, .issue-del-btn, .note-del-btn, .dark-toggle, .drag-handle { display: none !important; }
     .doc-body { display: block; }
     .sidebar { display: none; }
     .content { padding: 24px; }
@@ -882,6 +979,7 @@
 </head>
 <body>
 
+<button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="다크모드">☾</button>
 <header class="doc-header">
   <div class="header-eyebrow">Project Handover Document · 업무 인수인계서</div>
   <input class="header-title-input" type="text" value="프로젝트 인수인계서" placeholder="제목 입력" />
@@ -906,14 +1004,14 @@
   </div>
 </header>
 
-<div class="progress-strip">
-  <div class="stage done"><div class="stage-dot"></div><span class="stage-name">기획·사전검토</span></div>
-  <div class="stage done"><div class="stage-dot"></div><span class="stage-name">계획설계</span></div>
-  <div class="stage current"><div class="stage-dot"></div><span class="stage-name">중간설계</span></div>
-  <div class="stage"><div class="stage-dot"></div><span class="stage-name">실시설계</span></div>
-  <div class="stage"><div class="stage-dot"></div><span class="stage-name">인허가</span></div>
-  <div class="stage"><div class="stage-dot"></div><span class="stage-name">착공·현장감리</span></div>
-  <div class="stage"><div class="stage-dot"></div><span class="stage-name">준공·사용승인</span></div>
+<div class="progress-strip" id="progressStrip">
+  <div class="stage done" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">기획·사전검토</span></div>
+  <div class="stage done" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">계획설계</span></div>
+  <div class="stage current" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">중간설계</span></div>
+  <div class="stage" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">실시설계</span></div>
+  <div class="stage" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">인허가</span></div>
+  <div class="stage" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">착공·현장감리</span></div>
+  <div class="stage" onclick="cycleStage(this)"><div class="stage-dot"></div><span class="stage-name">준공·사용승인</span></div>
 </div>
 
 <div class="doc-body">
@@ -1307,6 +1405,116 @@
 <input type="file" id="fileInput" accept=".json" style="display:none" onchange="onFileLoad(event)" />
 
 <script>
+  /* ── 다크모드 ── */
+  function toggleDark() {
+    document.body.classList.toggle('dark');
+    document.getElementById('darkBtn').textContent = document.body.classList.contains('dark') ? '☀' : '☾';
+    localStorage.setItem('handover-dark', document.body.classList.contains('dark') ? '1' : '0');
+  }
+  (function(){
+    if (localStorage.getItem('handover-dark') === '1') {
+      document.body.classList.add('dark');
+      const btn = document.getElementById('darkBtn');
+      if (btn) btn.textContent = '☀';
+    }
+  })();
+
+  /* ── 진행 단계 클릭 토글 ── */
+  function cycleStage(el) {
+    const stages = [...document.querySelectorAll('#progressStrip .stage')];
+    const idx = stages.indexOf(el);
+    // 현재 상태 순환: none → done → current → none
+    const cur = el.classList.contains('current') ? 'current' : el.classList.contains('done') ? 'done' : 'none';
+    // 클릭한 단계를 current로 설정, 이전은 done, 이후는 none
+    stages.forEach((s, i) => {
+      s.classList.remove('done', 'current');
+      if (i < idx) s.classList.add('done');
+      else if (i === idx) s.classList.add('current');
+    });
+  }
+  // progress 저장/복원
+  function serializeProgress() {
+    return [...document.querySelectorAll('#progressStrip .stage')].map(s => ({
+      name: s.querySelector('.stage-name').textContent,
+      state: s.classList.contains('current') ? 'current' : s.classList.contains('done') ? 'done' : 'none'
+    }));
+  }
+
+  /* ── 파일 아이템 생성 (공통 팩토리) ── */
+  function makeFileItem(type, name, note, path) {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.draggable = true;
+    item.innerHTML = `
+      <select class="file-type-select" onchange="updateFileIcon(this)">
+        <option value="dwg"${type==='dwg'?' selected':''}>DWG</option>
+        <option value="pdf"${type==='pdf'?' selected':''}>PDF</option>
+        <option value="xls"${type==='xls'?' selected':''}>XLS</option>
+        <option value="hwp"${type==='hwp'?' selected':''}>HWP</option>
+      </select>
+      <div>
+        <input type="text" value="${escH(name)}" placeholder="파일명 / 도서명" style="font-weight:600;" />
+        <input type="text" value="${escH(note)}" placeholder="설명 (Rev., 상태 등)" class="file-note-input" />
+      </div>
+      <input type="text" value="${escH(path)}" placeholder="파일 경로" class="file-path-input" />
+      <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
+      <button class="btn-delete" style="margin-top:0" onclick="this.closest('.file-item').remove()">✕</button>`;
+    updateFileIcon(item.querySelector('.file-type-select'));
+    addDragEvents(item, '#fileList', '.file-item');
+    return item;
+  }
+
+  /* ── 드래그 앤 드롭 ── */
+  let dragSrc = null;
+  function addDragEvents(el, listSel, itemSel) {
+    el.setAttribute('draggable', true);
+    el.addEventListener('dragstart', e => {
+      dragSrc = el;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => el.style.opacity = '0.4', 0);
+    });
+    el.addEventListener('dragend', () => { el.style.opacity = ''; document.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over')); });
+    el.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      if (dragSrc && dragSrc !== el) {
+        const list = el.closest(listSel) || el.parentElement;
+        const items = [...list.querySelectorAll(itemSel)];
+        const srcIdx = items.indexOf(dragSrc);
+        const dstIdx = items.indexOf(el);
+        if (srcIdx < dstIdx) el.after(dragSrc);
+        else el.before(dragSrc);
+      }
+    });
+  }
+
+  /* 기존 파일 아이템에 드래그 이벤트 부착 */
+  document.querySelectorAll('#fileList .file-item').forEach(el => addDragEvents(el, '#fileList', '.file-item'));
+
+  /* 관계자 테이블 행 드래그 */
+  function addRowDrag(tr) {
+    tr.setAttribute('draggable', true);
+    tr.addEventListener('dragstart', e => { dragSrc = tr; e.dataTransfer.effectAllowed = 'move'; setTimeout(() => tr.style.opacity='0.4', 0); });
+    tr.addEventListener('dragend', () => { tr.style.opacity=''; document.querySelectorAll('#contactBody tr').forEach(r=>r.classList.remove('drag-over')); });
+    tr.addEventListener('dragover', e => { e.preventDefault(); tr.classList.add('drag-over'); });
+    tr.addEventListener('dragleave', () => tr.classList.remove('drag-over'));
+    tr.addEventListener('drop', e => {
+      e.preventDefault(); tr.classList.remove('drag-over');
+      if (dragSrc && dragSrc !== tr) {
+        const rows = [...document.querySelectorAll('#contactBody tr')];
+        if (rows.indexOf(dragSrc) < rows.indexOf(tr)) tr.after(dragSrc);
+        else tr.before(dragSrc);
+      }
+    });
+  }
+  document.querySelectorAll('#contactBody tr').forEach(addRowDrag);
+
+  /* 이슈 카드 드래그 */
+  document.querySelectorAll('#issueList .issue-card').forEach(el => addDragEvents(el, '#issueList', '.issue-card'));
+
+
   /* ── 목차 활성화 ── */
   const sections = document.querySelectorAll('.section');
   const tocItems = document.querySelectorAll('.toc-item');
@@ -1325,8 +1533,14 @@
     const v = sel.value;
     sel.setAttribute('data-type', v);
     const ci = sel.nextElementSibling;
-    if (ci && ci.classList.contains('role-custom-input'))
-      ci.style.display = v === '직접입력' ? 'block' : 'none';
+    if (!ci || !ci.classList.contains('role-custom-input')) return;
+    if (v === '직접입력') {
+      sel.style.display = 'none';
+      ci.style.display = 'block';
+    } else {
+      sel.style.display = '';
+      ci.style.display = 'none';
+    }
   }
   document.querySelectorAll('.role-select').forEach(updateRoleColor);
 
@@ -1391,18 +1605,13 @@
   }
   function serializeFileItems() {
     return [...document.querySelectorAll('#fileList .file-item')].map(item => {
-      const sel = item.querySelector('.file-type-select');
-      const nameEl = item.querySelector('.file-name');
-      const noteEl = item.querySelector('.file-note');
-      const pathEl = item.querySelector('.file-path');
-      const nameIn = item.querySelectorAll('input[type=text]')[0];
-      const noteIn = item.querySelectorAll('input[type=text]')[1];
-      const pathIn = item.querySelectorAll('input[type=text]')[2];
+      const sel  = item.querySelector('.file-type-select');
+      const inputs = [...item.querySelectorAll('input[type=text]')];
       return {
-        type: sel?.value||'pdf',
-        name: nameEl?.textContent||nameIn?.value||'',
-        note: noteEl?.textContent||noteIn?.value||'',
-        path: pathEl?.textContent||pathIn?.value||'',
+        type: sel?.value || 'dwg',
+        name: inputs[0]?.value || '',
+        note: inputs[1]?.value || '',
+        path: inputs[2]?.value || '',
       };
     });
   }
@@ -1438,6 +1647,7 @@
       headerInputs: [...document.querySelectorAll('.header-meta input')].map(i=>i.value),
       headerTitle: document.querySelector('.header-title-input')?.value || '',
       headerSubtitle: document.querySelector('.header-subtitle-input')?.value || '',
+      progress: serializeProgress(),
       s1: serializeS1(),
       milestones: serializeMilestones(),
       fileItems: serializeFileItems(),
@@ -1478,6 +1688,15 @@
     if(d.headerTitle !== undefined) { const el = document.querySelector('.header-title-input'); if(el) el.value = d.headerTitle; }
     if(d.headerSubtitle !== undefined) { const el = document.querySelector('.header-subtitle-input'); if(el) el.value = d.headerSubtitle; }
     // S1
+    if(d.progress) {
+      const stages = [...document.querySelectorAll('#progressStrip .stage')];
+      d.progress.forEach((p, i) => {
+        if (!stages[i]) return;
+        stages[i].classList.remove('done','current');
+        if (p.state === 'done') stages[i].classList.add('done');
+        else if (p.state === 'current') stages[i].classList.add('current');
+      });
+    }
     if(d.s1) {
       const els = [...document.querySelectorAll('#s1 input, #s1 textarea')];
       d.s1.forEach((v,i)=>{ if(els[i]) els[i].value=v; });
@@ -1511,20 +1730,7 @@
       const list = document.getElementById('fileList');
       list.innerHTML = '';
       d.fileItems.forEach(f => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.innerHTML = `
-          <select class="file-type-select" onchange="updateFileIcon(this)">
-            <option value="dwg"${f.type==='dwg'?' selected':''}>DWG</option>
-            <option value="pdf"${f.type==='pdf'?' selected':''}>PDF</option>
-            <option value="xls"${f.type==='xls'?' selected':''}>XLS</option>
-            <option value="hwp"${f.type==='hwp'?' selected':''}>HWP</option>
-          </select>
-          <div><div class="file-name">${escH(f.name)}</div><div class="file-note">${escH(f.note)}</div></div>
-          <span class="file-path">${escH(f.path)}</span>
-          <button class="btn-delete" onclick="this.closest('.file-item').remove()">✕</button>`;
-        list.appendChild(item);
-        updateFileIcon(item.querySelector('.file-type-select'));
+        list.appendChild(makeFileItem(f.type, f.name, f.note, f.path));
       });
     }
     // 관계자
@@ -1545,6 +1751,7 @@
           <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>`;
         tbody.appendChild(tr);
         updateRoleColor(tr.querySelector('.role-select'));
+        addRowDrag(tr);
       });
     }
     // 채널
@@ -1579,6 +1786,7 @@
             <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
           </div>`;
         list.appendChild(card);
+        addDragEvents(card, '#issueList', '.issue-card');
       });
     }
     // 메모
@@ -1647,6 +1855,7 @@
         <button class="issue-del-btn" onclick="this.closest('.issue-card').remove()">✕</button>
       </div>`;
     document.getElementById('issueList').appendChild(card);
+    addDragEvents(card, '#issueList', '.issue-card');
   }
 
   /* ── 경로 복사 ── */
@@ -1662,21 +1871,8 @@
   }
 
   function addFile() {
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    item.innerHTML = `
-      <select class="file-type-select" onchange="updateFileIcon(this)">
-        <option value="dwg">DWG</option><option value="pdf">PDF</option><option value="xls">XLS</option><option value="hwp">HWP</option>
-      </select>
-      <div>
-        <input type="text" placeholder="파일명 / 도서명" style="font-weight:600;" />
-        <input type="text" placeholder="설명 (Rev., 상태 등)" class="file-note-input" />
-      </div>
-      <input type="text" placeholder="파일 경로" class="file-path-input" />
-      <button class="btn-copy" onclick="copyPath(this)" title="경로 복사">⎘</button>
-      <button class="btn-delete" style="margin-top:0" onclick="this.closest('.file-item').remove()">✕</button>`;
+    const item = makeFileItem('dwg','','','');
     document.getElementById('fileList').appendChild(item);
-    updateFileIcon(item.querySelector('.file-type-select'));
   }
 
   function addContact() {
@@ -1693,6 +1889,7 @@
       <td class="del-cell"><button class="btn-delete" style="margin-top:0" onclick="this.closest('tr').remove()">✕</button></td>`;
     document.getElementById('contactBody').appendChild(tr);
     updateRoleColor(tr.querySelector('.role-select'));
+    addRowDrag(tr);
   }
 
   function addNote() {
