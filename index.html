@@ -975,11 +975,214 @@
     .sidebar { display: none; }
     .content { padding: 24px; }
   }
+
+  /* ── 모바일 반응형 ── */
+  @media (max-width: 768px) {
+
+    /* 헤더 패딩 축소 */
+    .doc-header {
+      padding: 24px 16px 20px;
+    }
+    .header-title-input {
+      font-size: 20px;
+    }
+    .header-meta {
+      gap: 16px;
+      flex-direction: column;
+    }
+    .meta-value input {
+      width: 100%;
+    }
+
+    /* 진행 단계 바 패딩 */
+    .progress-strip {
+      padding: 0 12px;
+    }
+    .stage {
+      padding: 12px 12px 12px 0;
+    }
+
+    /* 2단 그리드 → 단열 */
+    .doc-body {
+      grid-template-columns: 1fr;
+    }
+
+    /* 사이드바 숨김 → 상단 토글 버튼으로 대체 */
+    .sidebar {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      height: 100dvh;
+      z-index: 200;
+      padding: 56px 0 24px;
+      overflow-y: auto;
+    }
+    .sidebar.open {
+      display: block;
+    }
+
+    /* 모바일 목차 열기 버튼 */
+    .mob-toc-btn {
+      display: flex;
+    }
+
+    /* 콘텐츠 패딩 축소 */
+    .content {
+      padding: 24px 16px;
+      max-width: 100%;
+    }
+
+    /* 필드 그리드 단열 전환 */
+    .field-grid,
+    .field-grid.three {
+      grid-template-columns: 1fr;
+    }
+
+    /* 마일스톤 단열 */
+    .milestone-item {
+      grid-template-columns: 1fr;
+      gap: 4px 0;
+    }
+    .milestone-date {
+      text-align: left;
+      padding-top: 0;
+      padding-bottom: 2px;
+    }
+    .ms-date-input {
+      text-align: left;
+      width: 100%;
+    }
+    .milestone-track {
+      display: none;
+    }
+    .milestone-content {
+      margin: 0 0 4px;
+    }
+    .btn-delete {
+      margin-top: 0;
+      align-self: flex-end;
+    }
+
+    /* 파일 항목 그리드 축소 (파일아이콘 + 정보 + 삭제) */
+    .file-item {
+      grid-template-columns: 40px 1fr 28px;
+    }
+    .file-item .btn-copy {
+      display: none; /* 경로복사 버튼 숨김 — 모바일에서 clipboard 제한적 */
+    }
+    .file-item input[type=text].file-path-input {
+      width: 100%;
+    }
+
+    /* 관계자 테이블 → 가로 스크롤 허용 */
+    .contact-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .contact-table {
+      min-width: 560px;
+    }
+
+    /* 이슈 카드 footer flex-wrap */
+    .issue-footer {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .issue-meta-item input {
+      width: 80px;
+    }
+
+    /* 확인 섹션 단열 */
+    .confirm-section {
+      grid-template-columns: 1fr;
+    }
+
+    /* 액션 바: 하단 전체 너비 */
+    .action-bar {
+      bottom: 0;
+      right: 0;
+      left: 0;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      justify-content: stretch;
+      gap: 8px;
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+    }
+    .btn-action {
+      flex: 1;
+      text-align: center;
+    }
+
+    /* 다크모드 토글 위치 조정 (액션 바와 충돌 방지) */
+    .dark-toggle {
+      top: 12px;
+      right: 12px;
+    }
+
+    /* 본문 하단 여백 (액션 바 높이만큼) */
+    .content {
+      padding-bottom: 80px;
+    }
+
+    /* 모바일 목차 오버레이 닫기 버튼 */
+    .mob-toc-close {
+      display: flex;
+    }
+  }
+
+  /* 모바일 목차 버튼 (기본 숨김, 모바일에서만 표시) */
+  .mob-toc-btn {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 150;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 16px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.15s;
+  }
+  .mob-toc-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* 목차 닫기 버튼 */
+  .mob-toc-close {
+    display: none;
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .mob-toc-close:hover { color: var(--text); background: var(--surface2); }
+
+  /* 사이드바 열렸을 때 배경 오버레이 */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 199;
+  }
+  .sidebar-overlay.open { display: block; }
 </style>
 </head>
 <body>
 
 <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="다크모드">☾</button>
+<button class="mob-toc-btn" id="mobTocBtn" onclick="openToc()" title="목차">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeToc()"></div>
 <header class="doc-header">
   <div class="header-eyebrow">Project Handover Document · 업무 인수인계서</div>
   <input class="header-title-input" type="text" value="프로젝트 인수인계서" placeholder="제목 입력" />
@@ -1015,7 +1218,8 @@
 </div>
 
 <div class="doc-body">
-  <nav class="sidebar">
+  <nav class="sidebar" id="sidebar">
+    <button class="mob-toc-close" onclick="closeToc()">✕</button>
     <div class="toc-title">목차</div>
     <a href="#s1" class="toc-item active"><span class="toc-num">01</span>프로젝트 개요</a>
     <a href="#s2" class="toc-item"><span class="toc-num">02</span>주요 일정 & 마일스톤</a>
@@ -1209,6 +1413,7 @@
         <span class="section-title">관계자 & 협업 채널</span>
         <span class="section-badge">Stakeholders</span>
       </div>
+      <div class="contact-table-wrap">
       <table class="contact-table">
         <thead>
           <tr>
@@ -1250,6 +1455,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
       <button class="btn-add" onclick="addContact()">+ 관계자 추가</button>
       <div class="field-grid full" style="margin-top:24px;">
         <div class="field"><span class="field-label">메인 협업 채널</span><input type="text" placeholder="예) 카카오톡 단톡방 / 이메일" /></div>
@@ -1913,6 +2119,24 @@
     note.innerHTML = `<button class="note-del-btn" onclick="this.closest('.note-box').remove()">✕</button><textarea placeholder="내용 입력"></textarea>`;
     document.getElementById('s7').querySelector('.btn-add').before(note);
   }
+
+  /* ── 모바일 목차 ── */
+  function openToc() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeToc() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // 목차 링크 클릭 시 자동 닫기 (모바일)
+  document.querySelectorAll('.toc-item').forEach(el => {
+    el.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeToc();
+    });
+  });
 </script>
 </body>
 </html>
