@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-06-18T08:41:15.106Z",
+  "savedAt": "2026-06-24T07:02:29.141Z",
   "headerInputs": [
     "2026-06-30",
     "성산동 165-72일원 가로주택정비사업",
@@ -168,6 +168,18 @@
       "name": "프로젝트 일정표",
       "note": "",
       "path": "\\\\yegaone\\설계부1\\01.공동주택\\(2400) 성산동 165-72 일원 가로주택정비사업\\02-문서관련\\06_일정표"
+    },
+    {
+      "type": "xls",
+      "name": "대우건설검토 반영",
+      "note": "구글시트",
+      "path": "https://docs.google.com/spreadsheets/d/1VDvqQ2UjICelXrO49fNKiHq4Mz5pe-jIzUQo8yY2R1w/edit?gid=2037966115#gid=2037966115"
+    },
+    {
+      "type": "xls",
+      "name": "도서관리내역",
+      "note": "구글시트",
+      "path": "https://docs.google.com/spreadsheets/d/1vnMYJ1CATwn6G0lcR-s9w3tQN-2lc0zn8kZX83p1-WA/edit?gid=1734238598#gid=1734238598"
     }
   ],
   "contactRows": [
