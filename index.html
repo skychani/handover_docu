@@ -28,6 +28,11 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -982,6 +987,11 @@
     /* 헤더 패딩 축소 */
     .doc-header {
       padding: 24px 16px 20px;
+      width: 100%;
+    }
+    .header-eyebrow {
+      letter-spacing: 0.06em;
+      font-size: 9px;
     }
     .header-title-input {
       font-size: 20px;
@@ -992,6 +1002,17 @@
     }
     .meta-value input {
       width: 100%;
+    }
+
+    /* 필드 라벨 letter-spacing 축소 */
+    .field-label {
+      letter-spacing: 0.04em;
+    }
+    .section-badge {
+      letter-spacing: 0.04em;
+    }
+    .toc-title {
+      letter-spacing: 0.06em;
     }
 
     /* 진행 단계 바 패딩 */
